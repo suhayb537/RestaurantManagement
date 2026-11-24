@@ -1,0 +1,99 @@
+{% extends 'restaurant/base.html' %}
+
+{% block title %}Customers{% endblock %}
+{% block header %}Customer Management{% endblock %}
+
+{% block content %}
+
+<style>
+.customer-card {
+    background: white;
+    border: 1px solid #edf0fa;
+    border-radius: 20px;
+    padding: 22px;
+    transition: .3s;
+}
+.customer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(40,60,120,.10);
+}
+.customer-avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#2878f0,#8055db);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+    font-weight: bold;
+}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+        <h3 class="fw-bold">Customers</h3>
+        <p class="text-muted">Manage your restaurant customers.</p>
+    </div>
+    <a href="{% url 'customer_add' %}" class="btn btn-primary rounded-pill px-4">
+        + Add Customer
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="customer-card">
+            <h2 class="fw-bold">{{ total_customers }}</h2>
+            <p class="text-muted mb-0">Registered Customers</p>
+        </div>
+    </div>
+</div>
+
+<form method="GET" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="search" value="{{ search }}"
+               class="form-control rounded-start-pill"
+               placeholder="Search name, phone or email...">
+        <button class="btn btn-primary rounded-end-pill px-4">Search</button>
+    </div>
+</form>
+
+<div class="row g-4">
+    {% for customer in customers %}
+    <div class="col-md-6 col-xl-4">
+        <div class="customer-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="customer-avatar">
+                    {{ customer.name|first|upper }}
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1">{{ customer.name }}</h5>
+                    <small class="text-muted">Customer #{{ customer.id }}</small>
+                </div>
+            </div>
+
+            <hr>
+
+            <p class="mb-2">📞 {{ customer.phone }}</p>
+            <p class="mb-2">✉️ {{ customer.email|default:"No email" }}</p>
+            <p class="text-muted mb-3">📍 {{ customer.address|default:"No address" }}</p>
+
+            <div class="d-flex gap-2">
+                <a href="{% url 'customer_edit' customer.id %}"
+                   class="btn btn-outline-primary btn-sm flex-fill">Edit</a>
+                <a href="{% url 'customer_delete' customer.id %}"
+                   class="btn btn-outline-danger btn-sm flex-fill">Delete</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="customer-card text-center">
+            <h5>No customers found</h5>
+            <p class="text-muted">Add your first customer.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

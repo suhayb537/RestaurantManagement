@@ -1,0 +1,376 @@
+
+{% extends 'restaurant/base.html' %}
+
+{% block title %}Foods Management{% endblock %}
+{% block header %}Foods Management{% endblock %}
+
+{% block content %}
+
+<style>
+    .food-page {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .food-hero {
+        background: linear-gradient(120deg, #245bd5, #7564f5);
+        padding: 30px;
+        border-radius: 22px;
+        color: white;
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .food-hero h2 {
+        font-size: 27px;
+        font-weight: 800;
+    }
+
+    .food-hero p {
+        color: #e0e8ff;
+        font-size: 13px;
+    }
+
+    .food-hero-icon {
+        position: absolute;
+        right: 35px;
+        top: 10px;
+        font-size: 110px;
+        opacity: .16;
+    }
+
+    .food-stat {
+        background: white;
+        border: 1px solid #e9eef8;
+        border-radius: 17px;
+        padding: 19px;
+        box-shadow: 0 7px 22px rgba(35,70,140,.05);
+        height: 100%;
+    }
+
+    .food-stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 13px;
+        display: grid;
+        place-items: center;
+        font-size: 21px;
+        background: #edf2ff;
+        color: #3478f6;
+        margin-bottom: 12px;
+    }
+
+    .food-stat h3 {
+        font-weight: 800;
+        color: #253758;
+        margin: 0;
+    }
+
+    .food-stat p {
+        font-size: 12px;
+        color: #8994a8;
+        margin: 5px 0 0;
+    }
+
+    .food-search {
+        background: white;
+        padding: 18px;
+        border-radius: 17px;
+        border: 1px solid #e9eef8;
+        box-shadow: 0 5px 20px rgba(35,70,140,.04);
+    }
+
+    .food-card {
+        background: white;
+        border-radius: 19px;
+        overflow: hidden;
+        border: 1px solid #e9eef8;
+        box-shadow: 0 7px 25px rgba(35,70,140,.06);
+        transition: .25s;
+        height: 100%;
+    }
+
+    .food-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 32px rgba(35,70,140,.12);
+    }
+
+    .food-image {
+        height: 190px;
+        background: linear-gradient(135deg, #e9efff, #f3edff);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .food-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: .4s;
+    }
+
+    .food-card:hover .food-image img {
+        transform: scale(1.06);
+    }
+
+    .food-placeholder {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #8199d6;
+        font-size: 65px;
+    }
+
+    .food-status {
+        position: absolute;
+        top: 13px;
+        right: 13px;
+        border-radius: 30px;
+        padding: 7px 12px;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .food-info {
+        padding: 18px;
+    }
+
+    .food-category {
+        color: #6c63ed;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .food-name {
+        font-size: 16px;
+        font-weight: 800;
+        color: #273956;
+        margin: 8px 0;
+    }
+
+    .food-description {
+        color: #8994a8;
+        font-size: 11px;
+        min-height: 34px;
+    }
+
+    .food-price {
+        color: #3478f6;
+        font-size: 21px;
+        font-weight: 800;
+    }
+
+    .food-action {
+        width: 34px;
+        height: 34px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 9px;
+        text-decoration: none;
+    }
+
+    .food-edit {
+        background: #edf3ff;
+        color: #3478f6;
+    }
+
+    .food-delete {
+        background: #fff0f0;
+        color: #e34e61;
+    }
+
+    .food-section-title {
+        color: #273956;
+        font-size: 18px;
+        font-weight: 800;
+    }
+</style>
+
+<div class="food-page">
+
+    <!-- HERO -->
+    <div class="food-hero">
+        <div class="position-relative" style="z-index:2;">
+            <span class="badge bg-white text-primary mb-3">
+                RESTAURANT MENU
+            </span>
+
+            <h2>Discover Our Delicious Foods 🍔</h2>
+
+            <p>Manage your restaurant menu, food products and prices in one place.</p>
+
+            <a href="{% url 'food_add' %}"
+               class="btn btn-light text-primary fw-bold mt-2 px-4 py-2">
+                <i class="bi bi-plus-circle"></i> Add New Food
+            </a>
+        </div>
+
+        <i class="bi bi-egg-fried food-hero-icon"></i>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="food-stat">
+                <div class="food-stat-icon">
+                    <i class="bi bi-egg-fried"></i>
+                </div>
+                <h3>{{ foods|length }}</h3>
+                <p>Foods Displayed</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="food-stat">
+                <div class="food-stat-icon" style="background:#e8fbf2;color:#16a36a;">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <h3>{{ available_count }}</h3>
+                <p>Available Foods</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="food-stat">
+                <div class="food-stat-icon" style="background:#fff0f1;color:#e34e61;">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+                <h3>{{ unavailable_count }}</h3>
+                <p>Unavailable Foods</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="food-search mb-4">
+        <form method="GET" class="row g-2">
+            <div class="col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <i class="bi bi-search text-primary"></i>
+                    </span>
+
+                    <input type="text"
+                           name="search"
+                           class="form-control"
+                           placeholder="Search food name or category..."
+                           value="{{ search }}">
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- FOOD COLLECTION -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="food-section-title mb-1">Our Food Collection</h5>
+            <small class="text-secondary">Explore and manage your restaurant foods</small>
+        </div>
+        <span class="badge rounded-pill text-bg-primary">
+            {{ foods|length }} Foods
+        </span>
+    </div>
+
+    <div class="row g-4">
+
+        {% for food in foods %}
+
+        <div class="col-xl-3 col-lg-4 col-md-6">
+
+            <div class="food-card">
+
+                <div class="food-image">
+
+                    {% if food.image %}
+                        <img src="{{ food.image.url }}" alt="{{ food.name }}">
+                    {% else %}
+                        <div class="food-placeholder">
+                            <i class="bi bi-egg-fried"></i>
+                        </div>
+                    {% endif %}
+
+                    {% if food.available %}
+                        <span class="food-status bg-success text-white">
+                            <i class="bi bi-check-circle"></i> Available
+                        </span>
+                    {% else %}
+                        <span class="food-status bg-danger text-white">
+                            <i class="bi bi-x-circle"></i> Unavailable
+                        </span>
+                    {% endif %}
+
+                </div>
+
+                <div class="food-info">
+
+                    <div class="food-category">
+                        {{ food.category.name }}
+                    </div>
+
+                    <h5 class="food-name">{{ food.name }}</h5>
+
+                    <p class="food-description">
+                        {{ food.description|default:"Delicious food from our restaurant."|truncatewords:12 }}
+                    </p>
+
+                    <hr style="border-color:#edf0f7;">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <small class="text-secondary d-block">Price</small>
+                            <span class="food-price">${{ food.price }}</span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'food_update' food.id %}"
+                               class="food-action food-edit"
+                               title="Edit Food">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+
+                            <a href="{% url 'food_delete' food.id %}"
+                               class="food-action food-delete"
+                               title="Delete Food">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="col-12">
+            <div class="food-stat text-center py-5">
+                <i class="bi bi-basket3 display-3 text-primary"></i>
+                <h4 class="mt-3 fw-bold">No Foods Available</h4>
+                <p class="text-secondary">Start by adding your first restaurant food.</p>
+
+                <a href="{% url 'food_add' %}" class="btn btn-primary px-4">
+                    <i class="bi bi-plus-circle"></i> Add Your First Food
+                </a>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,211 @@
+
+{% extends 'restaurant/base.html' %}
+
+{% block title %}Categories | Restaurant Management{% endblock %}
+{% block header %}Category Management{% endblock %}
+
+{% block extra_css %}
+<style>
+.category-hero {
+    background: linear-gradient(120deg, #263c91, #7653d6);
+    border-radius: 22px;
+    padding: 30px;
+    color: white;
+    margin-bottom: 25px;
+}
+.category-card {
+    border: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: .25s;
+    height: 100%;
+    box-shadow: 0 5px 22px rgba(35, 48, 100, .08);
+}
+.category-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(35, 48, 100, .15);
+}
+.category-icon {
+    width: 65px;
+    height: 65px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #e8eaff, #f0e7ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6252cf;
+    font-size: 28px;
+}
+.category-count {
+    background: #f0edff;
+    color: #624bd1;
+    border-radius: 12px;
+    padding: 9px 14px;
+    font-weight: 700;
+}
+.search-box {
+    border-radius: 13px;
+    padding: 12px 16px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- HERO -->
+    <div class="category-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <span class="badge bg-light text-primary mb-3">RESTAURANT MENU</span>
+                <h2 class="fw-bold">Food Categories</h2>
+                <p class="mb-0 opacity-75">
+                    Organize your restaurant menu and manage all food categories.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'category_add' %}" class="btn btn-light btn-lg rounded-3 fw-semibold">
+                    <i class="bi bi-plus-circle me-2"></i> Add Category
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body d-flex align-items-center gap-3 p-4">
+                    <div class="category-icon">
+                        <i class="bi bi-grid-fill"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-1">Total Categories</p>
+                        <h3 class="fw-bold mb-0">{{ total_categories }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body d-flex align-items-center gap-3 p-4">
+                    <div class="category-icon">
+                        <i class="bi bi-egg-fried"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-1">Categories Displayed</p>
+                        <h3 class="fw-bold mb-0">{{ categories|length }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body d-flex align-items-center gap-3 p-4">
+                    <div class="category-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted mb-1">Search Results</p>
+                        <h3 class="fw-bold mb-0">{{ categories|length }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-3">
+            <form method="GET" class="row g-2 align-items-center">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-primary"></i>
+                        </span>
+                        <input type="text" name="search" value="{{ search }}"
+                               class="form-control search-box border-start-0"
+                               placeholder="Search category name or description...">
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary rounded-3 flex-fill">
+                        Search
+                    </button>
+                    <a href="{% url 'category_list' %}" class="btn btn-light rounded-3">
+                        Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CATEGORY CARDS -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold mb-1">All Categories</h4>
+            <p class="text-muted mb-0">Manage your food groups</p>
+        </div>
+        <span class="badge bg-primary rounded-pill px-3 py-2">
+            {{ categories|length }} Categories
+        </span>
+    </div>
+
+    <div class="row g-4">
+        {% for category in categories %}
+        <div class="col-xl-4 col-md-6">
+            <div class="card category-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="category-icon">
+                            <i class="bi bi-egg-fried"></i>
+                        </div>
+                        <span class="category-count">
+                            <i class="bi bi-basket me-1"></i>
+                            {{ category.food_count }} Foods
+                        </span>
+                    </div>
+
+                    <h5 class="fw-bold mb-2">{{ category.name }}</h5>
+
+                    <p class="text-muted mb-4">
+                        {% if category.description %}
+                            {{ category.description|truncatewords:18 }}
+                        {% else %}
+                            No description available for this category.
+                        {% endif %}
+                    </p>
+
+                    <hr class="text-muted">
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'category_edit' category.id %}"
+                           class="btn btn-outline-primary rounded-3 flex-fill">
+                            <i class="bi bi-pencil-square me-1"></i> Edit
+                        </a>
+                        <a href="{% url 'category_delete' category.id %}"
+                           class="btn btn-outline-danger rounded-3 flex-fill">
+                            <i class="bi bi-trash me-1"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-inbox display-3 text-muted"></i>
+                    <h4 class="fw-bold mt-3">No Categories Found</h4>
+                    <p class="text-muted">Add your first food category to get started.</p>
+                    <a href="{% url 'category_add' %}" class="btn btn-primary rounded-3">
+                        <i class="bi bi-plus-circle me-2"></i> Add First Category
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

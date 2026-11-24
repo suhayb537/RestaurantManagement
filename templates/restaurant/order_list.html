@@ -1,0 +1,177 @@
+{% extends 'restaurant/base.html' %}
+
+{% block title %}Orders{% endblock %}
+{% block header %}Order Management{% endblock %}
+
+{% block content %}
+
+<style>
+.order-stat {
+    background: white;
+    border: 1px solid #edf0fa;
+    border-radius: 18px;
+    padding: 20px;
+    height: 100%;
+}
+.order-table {
+    background: white;
+    border-radius: 20px;
+    padding: 22px;
+    border: 1px solid #edf0fa;
+}
+.order-table table th {
+    color: #68748b;
+    font-size: 13px;
+    background: #f7f8fc;
+    padding: 15px;
+}
+.order-table table td {
+    padding: 15px;
+    vertical-align: middle;
+}
+</style>
+
+<div class="mb-4">
+    <h3 class="fw-bold">Restaurant Orders</h3>
+    <p class="text-muted">Track orders and manage their status.</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg">
+        <div class="order-stat">
+            <h3 class="fw-bold">{{ total_orders }}</h3>
+            <small class="text-muted">All Orders</small>
+        </div>
+    </div>
+    <div class="col-6 col-lg">
+        <div class="order-stat">
+            <h3 class="fw-bold text-warning">{{ pending_orders }}</h3>
+            <small class="text-muted">Pending</small>
+        </div>
+    </div>
+    <div class="col-6 col-lg">
+        <div class="order-stat">
+            <h3 class="fw-bold text-primary">{{ preparing_orders }}</h3>
+            <small class="text-muted">Preparing</small>
+        </div>
+    </div>
+    <div class="col-6 col-lg">
+        <div class="order-stat">
+            <h3 class="fw-bold text-info">{{ ready_orders }}</h3>
+            <small class="text-muted">Ready</small>
+        </div>
+    </div>
+    <div class="col-6 col-lg">
+        <div class="order-stat">
+            <h3 class="fw-bold text-success">{{ delivered_orders }}</h3>
+            <small class="text-muted">Delivered</small>
+        </div>
+    </div>
+</div>
+
+<div class="order-table">
+
+    <form method="GET" class="row g-2 mb-4">
+        <div class="col-md-7">
+            <input type="text" name="search" value="{{ search }}"
+                   class="form-control"
+                   placeholder="Search order ID, customer or phone...">
+        </div>
+
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Preparing" {% if selected_status == 'Preparing' %}selected{% endif %}>Preparing</option>
+                <option value="Ready" {% if selected_status == 'Ready' %}selected{% endif %}>Ready</option>
+                <option value="Delivered" {% if selected_status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                <option value="Cancelled" {% if selected_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Food Items</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Update Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td class="fw-bold">#{{ order.id }}</td>
+
+                    <td>
+                        <strong>{{ order.customer.name }}</strong><br>
+                        <small class="text-muted">{{ order.customer.phone }}</small>
+                    </td>
+
+                    <td>
+                        {% for item in order.items.all %}
+                            <div>{{ item.food.name }} × {{ item.quantity }}</div>
+                        {% empty %}
+                            <span class="text-muted">No items</span>
+                        {% endfor %}
+                    </td>
+
+                    <td>{{ order.order_date|date:"d M Y, H:i" }}</td>
+
+                    <td class="fw-bold">
+                        {{ order.total_price|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {% if order.status == 'Pending' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif order.status == 'Preparing' %}
+                            <span class="badge bg-primary">Preparing</span>
+                        {% elif order.status == 'Ready' %}
+                            <span class="badge bg-info text-dark">Ready</span>
+                        {% elif order.status == 'Delivered' %}
+                            <span class="badge bg-success">Delivered</span>
+                        {% else %}
+                            <span class="badge bg-danger">Cancelled</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <form method="POST" action="{% url 'order_update_status' order.id %}">
+                            {% csrf_token %}
+                            <div class="input-group input-group-sm">
+                                <select name="status" class="form-select">
+                                    <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    <option value="Preparing" {% if order.status == 'Preparing' %}selected{% endif %}>Preparing</option>
+                                    <option value="Ready" {% if order.status == 'Ready' %}selected{% endif %}>Ready</option>
+                                    <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                    <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                                <button class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        No orders found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

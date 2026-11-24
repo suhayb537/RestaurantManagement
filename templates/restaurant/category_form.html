@@ -1,0 +1,55 @@
+
+{% extends 'restaurant/base.html' %}
+
+{% block title %}Category Form{% endblock %}
+{% block header %}Category Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold">{{ page_title }}</h3>
+            <p class="text-muted">Create or update food categories</p>
+        </div>
+        <a href="{% url 'category_list' %}" class="btn btn-light rounded-3">
+            <i class="bi bi-arrow-left me-2"></i> Back
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mx-auto" style="max-width:750px;">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="rounded-4 d-inline-flex align-items-center justify-content-center mb-3"
+                     style="width:75px;height:75px;background:#eeeaff;color:#6652ce;font-size:30px;">
+                    <i class="bi bi-grid-fill"></i>
+                </div>
+                <h4 class="fw-bold">Category Information</h4>
+                <p class="text-muted">Enter the category details below</p>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary rounded-3 px-4">
+                        <i class="bi bi-save me-2"></i> Save Category
+                    </button>
+                    <a href="{% url 'category_list' %}" class="btn btn-light rounded-3 px-4">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

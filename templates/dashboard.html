@@ -1,0 +1,78 @@
+{% extends 'restaurant/base.html' %}
+
+{% block content %}
+
+<h2 class="mb-2">Restaurant Dashboard</h2>
+<p class="text-muted">Welcome to Restaurant Management System</p>
+
+<div class="row mt-4">
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 p-3">
+            <h6 class="text-muted">Total Categories</h6>
+            <h2 class="text-primary">{{ total_categories }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 p-3">
+            <h6 class="text-muted">Total Foods</h6>
+            <h2 class="text-success">{{ total_foods }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 p-3">
+            <h6 class="text-muted">Total Customers</h6>
+            <h2 class="text-warning">{{ total_customers }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 p-3">
+            <h6 class="text-muted">Total Orders</h6>
+            <h2 class="text-danger">{{ total_orders }}</h2>
+        </div>
+    </div>
+
+</div>
+
+<div class="card shadow-sm border-0 mt-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Latest Orders</h5>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in latest_orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.customer }}</td>
+                        <td>{{ order.order_date|date:"d M Y" }}</td>
+                        <td>{{ order.status }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            No orders available yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
